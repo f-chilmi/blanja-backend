@@ -18,9 +18,13 @@ const { authUser, authSeller } = require('./middleware/auth')
 
 const authRoutes = require('./routers/auth')
 const productRoutes = require('./routers/product')
+const cartRoutes = require('./routers/cart')
+const userRoutes = require('./routers/user')
 
 app.use('/auth', authRoutes)
 app.use('/public', productRoutes)
+app.use('/cart', authUser, cartRoutes)
+app.use('/user', authUser, userRoutes)
 // app.use('/job-seeker', authSeeker, jobSeekerRoutes)
 // app.use('/company', authCompany, companyRoutes)
 

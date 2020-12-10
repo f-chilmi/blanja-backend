@@ -1,10 +1,7 @@
 const { User, User_balance } = require('../models')
-
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-
 const { USER_KEY, TOKEN_EXP } = process.env
-
 const response = require('../helpers/response')
 const {
   registerUser,

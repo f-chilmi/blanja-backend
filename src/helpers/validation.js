@@ -10,5 +10,27 @@ module.exports = {
   loginUser: joi.object({
     email: joi.string().required(),
     password: joi.string().required().min(8),
+  }),
+  addCart: joi.object({
+    id_user: joi.number().required(),
+    id_product: joi.number().required(),
+    quantity: joi.number().required(),
+  }),
+  updateUser: joi.object({
+    name: joi.string(),
+    phone: joi.string(),
+    gender: joi.string(),
+    birth: joi.string(),
+    picture: joi.string(),
+  }),
+  addAddress: joi.object({
+    id_user: joi.number().required(),
+    nameAddress: joi.string().required(),
+    recipientsName: joi.string().required(),
+    recipientsPhone: joi.string().required(),
+    address: joi.string().required(),
+    postalCode: joi.string().required(),
+    city: joi.string().required(),
+    isPrimary: joi.bool().required(),
   })
 }
