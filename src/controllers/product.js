@@ -49,7 +49,6 @@ module.exports = {
         limit: parseInt(limit),
         order: [[sortKey, sortValue]]
       })
-      console.log(findProduct)
 
       const pageInfo = pagination('/public', req.query, page, limit, findProduct.count)
       const info = { findProduct, pageInfo }
@@ -67,7 +66,22 @@ module.exports = {
   detail: async (req, res) => {
     try {
       const { id } = req.params
-      const findDetail = await Product.findByPk(id)
+      const findDetail = await Product.findAll({
+        include: {model: Category, as: 'Category', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        attributes: {
+          include: [
+            [
+                sequelize.literal(`(
+                    SELECT AVG(rating)
+                    FROM Product_ratings AS Product_rating
+                    WHERE
+                        id_product = Product.id
+                )`),
+                'rating'
+            ]
+          ] },
+        where: { id: id }
+      })
       console.log(findDetail)
       if (findDetail) {
         return response(res, 'Detail product', {findDetail}, 200, true)

@@ -18,28 +18,38 @@ module.exports = {
         where: { id_user: id }
       })
       console.log(PrimaryAddress, cartList)
-      console.log(cartList.length)
-      if (cartList.length) {
-        // const total = cartList.map(item => item.price * item.quantity)
-        // cartList = cartList.map(item => {
-        //   return {
-        //     ...item,
-        //     total: item.price * item.quantity
-        //   }
-        // })
-        // const add = (accumulator, currentValue) => accumulator + currentValue
-        // const shippingCost = 10000
-        // const totalPrice = total.reduce(add)
-        // const totalAll = shippingCost + totalPrice
+      const showCart = await Cart.findAll({
+        include: {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        where: { id_user: id }
+      })
+      if (showCart.length > 0) {
+        const total = showCart.map(item => item.dataValues.Product.dataValues.price * item.quantity)
+
+        let result = showCart.map(item => {
+          return {
+            ...item.dataValues,
+            total: item.dataValues.Product.dataValues.price * item.quantity
+          }
+        })
+
+        const add = (accumulator, currentValue) => accumulator + currentValue
+        const totalPrice = total.reduce(add)
+
+        const data = {
+          result,
+          'total price': totalPrice
+        }
+        const shippingCost = 10000
+        const totalAll = totalPrice + shippingCost
 
         response(res, 'Checkout page', { 
           data : {
             PrimaryAddress,
-            cartList,
+            data,
           },
-          // 'shipping cost': shippingCost,
-          // 'total price': totalPrice,
-          // total: totalAll  
+          'shipping cost': shippingCost,
+          'total price': totalPrice,
+          total: totalAll  
         }, 200, true)
       }
       
@@ -91,6 +101,7 @@ module.exports = {
     try {
       const { id } = req.user
       const order = await Transaction.findAll({
+        include: {model: Transaction_detail, as: 'Transaction_detail', attributes: { exclude: ['createdAt', 'updatedAt'] }},
         where: { id_user: id }
       })
 
@@ -114,42 +125,37 @@ module.exports = {
         where: { id_user: id }
       })
 
-      response(res, 'Info', {showBalance}, 200, true)
-    //   const { id } = req.user
-    // showAddressPrimaryModel(id, address => {
-    //   showCartListModel(id, product => {
-    //     const total = product.map(item => item.price * item.quantity)
-    //     product = product.map(item => {
-    //       return {
-    //         ...item,
-    //         total: item.price * item.quantity
-    //       }
-    //     })
-    //     const add = (accumulator, currentValue) => accumulator + currentValue
-    //     const shippingCost = 10000
-    //     const totalPrice = total.reduce(add)
-    //     const totalAll = shippingCost + totalPrice
-    //     showSaldoUserModel(id, result => {
-    //       // console.log(result[0].saldo)
-    //       if (result[0].saldo > totalAll) {
-    //         res.send({
-    //           success: true,
-    //           message: 'pay with blanjaCash',
-    //           saldo: result[0].saldo,
-    //           total: totalAll
-    //         })
-    //       } else {
-    //         res.status(200).send({
-    //           success: true,
-    //           message: 'blanjaCash balance is not enough. top up now',
-    //           saldo: result[0].saldo,
-    //           total: totalAll
-    //         })
-    //       }
-    //     })
-    //   })
-    // })
-    // }
+      const showCart = await Cart.findAll({
+        include: {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        where: { id_user: id }
+      })
+
+      const total = showCart.map(item => item.dataValues.Product.dataValues.price * item.quantity)
+
+      let result = showCart.map(item => {
+        return {
+          ...item.dataValues,
+          total: item.dataValues.Product.dataValues.price * item.quantity
+        }
+      })
+
+      const add = (accumulator, currentValue) => accumulator + currentValue
+      const totalPrice = total.reduce(add)
+
+      const data = {
+        result,
+        'total price': totalPrice
+      }
+      const shippingCost = 10000
+      const totalAll = totalPrice + shippingCost
+
+      console.log(showBalance[0].dataValues.balance)
+      if (showBalance[0].dataValues.balance >= totalAll) {
+        return response(res, 'Pay with BlanjaCash', {...showBalance[0].dataValues, totalAll}, 200, true)
+      } else {
+        return response(res, 'BlanjaCash is not enough', {...showBalance[0].dataValues, totalAll}, 200, true)
+      }
+      
     } catch (e) {
       if (e.errors) {
         return response(res, e.errors[0].message, {}, 500, false)

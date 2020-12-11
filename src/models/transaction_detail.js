@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model
+  Model, Transaction
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Transaction_detail extends Model {
@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // Product.belongsTo(models.Category, { foreignKey: 'id_category',  as: 'Category' })
+      // Transaction_detail.belongsTo(models.Transaction, { foreignKey: 'id_transaction', as: 'Transaction' })
     }
   };
   Transaction_detail.init({
