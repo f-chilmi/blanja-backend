@@ -3,7 +3,7 @@ const response = require('../helpers/response')
 const {pagination} = require('../helpers/pagination')
 const { Op } = require("sequelize")
 const {APP_URL} = process.env
-const {updateUser, addAddress} = require('../helpers/validation')
+const {updateUser, addAddress, editAddress} = require('../helpers/validation')
 
 module.exports = {
   show: async (req, res) => {
@@ -69,7 +69,7 @@ module.exports = {
       const find = await User_address.findAll({
         where: { id_user: id }
       })
-      if (find) {
+      if (find.length > 0) {
         response(res, 'Address user', {find}, 200, true)
       } else {
         response(res, 'No address found', {}, 200, true)
@@ -101,5 +101,49 @@ module.exports = {
       } 
       return response(res, e.message, {}, 500, false)
     }
-  }
+  },
+  editAddress: async (req, res) => {
+    try {
+      const id_user = req.user.id
+      const { id } = req.params
+      const { value, error } = editAddress.validate({ ...req.body, id_user })
+      if (error) {
+        return response(res, error.message, {}, 400, false)
+      }
+      const data = {
+        nameAddress: value.nameAddress,
+        recipientsName: value.recipientsName,
+        recipientsPhone: value.recipientsPhone,
+        address: value.address,
+        postalCode: value.postalCode,
+        city: value.city,
+        isPrimary: value.isPrimary,
+      }
+      const addressUpdated = await User_address.update(data, {
+        where: [{ id: id }, { id_user: id_user }]
+      })
+      console.log(addressUpdated, data, id)
+      return response(res, 'Address updated', {addressUpdated}, 200, true)
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.error[0].message, {}, 500, false)
+      } 
+      return response(res, e.message, {}, 500, false)
+    }
+  },
+  delete: async (req, res) => {
+    try {
+      const {id} = req.params
+      console.log(id)
+      const deleteAddress = await User_address.destroy({
+        where: { id: id }
+      })
+      return response(res, 'Address deleted', {deleteAddress}, 200, true)
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.errors[0].message, {}, 500, false)
+      }
+      return response(res, e.message, {}, 500, false)
+    }
+  },
 }

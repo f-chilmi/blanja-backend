@@ -32,5 +32,15 @@ module.exports = {
     postalCode: joi.string().required(),
     city: joi.string().required(),
     isPrimary: joi.bool().required(),
+  }),
+  editAddress: joi.object({
+    id_user: joi.number(),
+    nameAddress: joi.string(),
+    recipientsName: joi.string(),
+    recipientsPhone: joi.string(),
+    address: joi.string(),
+    postalCode: joi.string(),
+    city: joi.string(),
+    isPrimary: joi.bool(),
   })
 }
