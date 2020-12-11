@@ -42,5 +42,15 @@ module.exports = {
     postalCode: joi.string(),
     city: joi.string(),
     isPrimary: joi.bool(),
+  }),
+  addOrderValidate: joi.object({
+    id_seller: joi.number().required(),
+    id_user: joi.number().required(),
+    id_product: joi.number().required(),
+    name: joi.string().required(),
+    quantity: joi.number().required(),
+    price: joi.number().required(),
+    total: joi.number().required(),
+    picture: joi.string().required(),
   })
 }

@@ -40,10 +40,28 @@ module.exports = {
     try {
       const {id} = req.user
       const showCart = await Cart.findAll({
+        include: {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt'] }},
         where: { id_user: id }
       })
       if (showCart.length > 0) {
-        return response(res, 'Cart list', {showCart}, 200, true)
+        const total = showCart.map(item => item.dataValues.Product.dataValues.price * item.quantity)
+
+        let result = showCart.map(item => {
+          return {
+            ...item.dataValues,
+            total: item.dataValues.Product.dataValues.price * item.quantity
+          }
+        })
+
+        const add = (accumulator, currentValue) => accumulator + currentValue
+        const totalPrice = total.reduce(add)
+
+        const data = {
+          result,
+          'total price': totalPrice
+        }
+
+        return response(res, 'Cart list', { data }, 200, true)
       } else {
         return response(res, 'Your cart is empty', {}, 200, true)
       }

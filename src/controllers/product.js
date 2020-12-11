@@ -1,7 +1,8 @@
-const { User, User_balance, Product, Product_rating } = require('../models')
+const { User, User_balance, Product, Product_rating, Category } = require('../models')
 const response = require('../helpers/response')
 const {pagination} = require('../helpers/pagination')
 const { Op } = require("sequelize")
+const sequelize = require('sequelize')
 const {APP_URL} = process.env
 
 module.exports = {
@@ -28,7 +29,19 @@ module.exports = {
       const offset = (page - 1) * limit
       
       const findProduct = await Product.findAndCountAll({
-        attributes: { exclude: 'updatedAt' },
+        include: {model: Category, as: 'Category', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        attributes: {
+          include: [
+            [
+                sequelize.literal(`(
+                    SELECT AVG(rating)
+                    FROM Product_ratings AS Product_rating
+                    WHERE
+                        id_product = Product.id
+                )`),
+                'rating'
+            ]
+          ] },
         where: {
           name: { [Op.substring]: searchValue },
         },
