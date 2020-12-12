@@ -1,4 +1,4 @@
-const { User, User_balance, Product, Product_rating, Category } = require('../models')
+const { User, User_balance, Product, Product_rating, Product_picture, Category } = require('../models')
 const response = require('../helpers/response')
 const {pagination} = require('../helpers/pagination')
 const { Op } = require("sequelize")
@@ -8,7 +8,7 @@ const {APP_URL} = process.env
 module.exports = {
   show: async (req, res) => {
     try {
-      let { page, limit, search, sort } = req.query
+      let { page=1, limit=5, search, sort } = req.query
       let searchValue = ''
       let sortKey = ''
       let sortValue = ''
@@ -29,7 +29,9 @@ module.exports = {
       const offset = (page - 1) * limit
       
       const findProduct = await Product.findAndCountAll({
-        include: {model: Category, as: 'Category', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        include: [
+          {model: Product_picture, attributes: { exclude: ['createdAt', 'updatedAt'] }},
+          {model: Category, as: 'Category', attributes: { exclude: ['createdAt', 'updatedAt'] }}],
         attributes: {
           include: [
             [
@@ -67,7 +69,9 @@ module.exports = {
     try {
       const { id } = req.params
       const findDetail = await Product.findAll({
-        include: {model: Category, as: 'Category', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        include: [
+          {model: Category, as: 'Category', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+          {model: Product_picture, attributes: { exclude: ['createdAt', 'updatedAt'] }}],
         attributes: {
           include: [
             [

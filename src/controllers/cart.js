@@ -1,4 +1,4 @@
-const { User, User_balance, Product, Product_rating, Cart } = require('../models')
+const { User, User_balance, Product, Product_picture, Product_rating, Cart } = require('../models')
 const response = require('../helpers/response')
 const {pagination} = require('../helpers/pagination')
 const { Op } = require("sequelize")
@@ -36,11 +36,28 @@ module.exports = {
       return response(res, e.message, {}, 500, false)
     }
   },
+  update: async (req, res) => {
+    try {
+      const { id } = req.user
+      const { id_product, quantity } = req.body
+      const updateCart = await Cart.update({quantity: quantity}, {
+        where: [{ id_product: id_product }, { id_user: id }]
+      })
+      return response(res, 'Cart updated', {updateCart}, 200, true)
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.errors[0].message, {}, 500, false)
+      }
+      return response(res, e.message, {}, 500, false)
+    }
+  },
   show: async (req, res) => {
     try {
       const {id} = req.user
       const showCart = await Cart.findAll({
-        include: {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt'] }},
+        include: [
+          {model: Product_picture, attributes: { exclude: ['createdAt', 'updatedAt'] }},
+          {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt'] }}],
         where: { id_user: id }
       })
       if (showCart.length > 0) {
