@@ -1,4 +1,4 @@
-const { User, User_balance, Product, Product_rating, Cart, User_address, Transaction, Transaction_detail } = require('../models')
+const { User, User_balance, Product, Product_rating, Cart, User_address, Transaction, Transaction_detail, Order } = require('../models')
 const response = require('../helpers/response')
 const {pagination} = require('../helpers/pagination')
 const { Op } = require("sequelize")
@@ -60,7 +60,7 @@ module.exports = {
       return response(res, e.message, {}, 500, false)
     }
   },
-  addOrder: async (req, res) => {
+  addTransactionOrder: async (req, res) => {
     try {
       const id_user = req.user.id
       const { value, error } = addOrderValidate.validate({...req.body, id_user})
@@ -97,7 +97,7 @@ module.exports = {
       return response(res, e.message, {}, 500, false)
     }
   },
-  showOrder: async (req, res) => {
+  showTransactionOrder: async (req, res) => {
     try {
       const { id } = req.user
       const order = await Transaction.findAll({
@@ -109,6 +109,51 @@ module.exports = {
         response(res, 'Order list', {order}, 200, true)
       } else {
         response(res, 'No order', {}, 200, true)
+      }
+
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.errors[0].message, {}, 500, false)
+      }
+      return response(res, e.message, {}, 500, false)
+    }
+  },
+  addOrder: async (req, res) => {
+    try {
+      const id_user = req.user.id
+      const transaction = {
+        id_seller: req.body.id_seller,
+        id_user: id_user,
+        quantity: req.body.quantity,
+        total: req.body.total,
+        status: req.body.status,
+      }
+
+      const addOrder = await Order.create(transaction)
+      const deleteCart = await Cart.destroy({
+        where: { id_user: id_user }
+      })
+
+      response(res, 'Order added', {addOrder, deleteCart}, 200, true)
+      
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.errors[0].message, {}, 500, false)
+      }
+      return response(res, e.message, {}, 500, false)
+    }
+  },
+  showOrder: async (req, res) => {
+    try {
+      const { id } = req.user
+      const order = await Order.findAll({
+        where: { id_user: id }
+      })
+
+      if (order.length > 0) {
+        response(res, 'Order list', {order}, 200, true)
+      } else {
+        response(res, 'No order found', {}, 200, true)
       }
 
     } catch (e) {

@@ -1,7 +1,8 @@
 const { User, User_balance, Product, Product_picture, Product_rating, Cart } = require('../models')
 const response = require('../helpers/response')
 const {pagination} = require('../helpers/pagination')
-const { Op } = require("sequelize")
+const { Op } = require('sequelize')
+const sequelize = require('sequelize')
 const {APP_URL} = process.env
 const {addCart} = require('../helpers/validation')
 
@@ -55,9 +56,19 @@ module.exports = {
     try {
       const {id} = req.user
       const showCart = await Cart.findAll({
-        include: [
-          {model: Product_picture, attributes: { exclude: ['createdAt', 'updatedAt'] }},
-          {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt'] }}],
+        include: {model: Product, as: 'Product', attributes: { exclude: ['createdAt', 'updatedAt']}},
+        attributes: {
+          include: [
+            [
+                sequelize.literal(`(
+                    SELECT picture
+                    FROM Product_pictures AS Product_picture
+                    WHERE
+                        id_product = Cart.id_product
+                )`),
+                'picture'
+            ]
+          ] },        
         where: { id_user: id }
       })
       if (showCart.length > 0) {

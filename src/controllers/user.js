@@ -89,6 +89,9 @@ module.exports = {
       if (error) {
         return response(res, error.message, {}, 400, false)
       }
+      await User_address.update({ isPrimary: false }, {
+        where: [{ isPrimary: true }, { id_user: id_user }]
+      })
       const newAddress = await User_address.create(value)
       if (newAddress) {
         return response(res, 'New address added', {newAddress}, 200, true)
@@ -124,6 +127,25 @@ module.exports = {
       })
       console.log(addressUpdated, data, id)
       return response(res, 'Address updated', {addressUpdated}, 200, true)
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.error[0].message, {}, 500, false)
+      } 
+      return response(res, e.message, {}, 500, false)
+    }
+  },
+  editAddressPrimary: async (req, res) => {
+    try {
+      const id_user = req.user.id
+      const { id } = req.params
+      const { isPrimary } = req.body
+      const primaryFalse = await User_address.update({ isPrimary: false }, {
+        where: [{ isPrimary: true }, { id_user: id_user }]
+      })
+      const addressUpdated = await User_address.update({isPrimary: isPrimary}, {
+        where: [{ id: id }, { id_user: id_user }]
+      })
+      return response(res, 'Address updated', {addressUpdated, primaryFalse}, 200, true)
     } catch (e) {
       if (e.errors) {
         return response(res, e.error[0].message, {}, 500, false)

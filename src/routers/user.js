@@ -9,6 +9,7 @@ route.patch('/update-picture', upload, userController.updateImage)
 route.get('/address', userController.address)
 route.post('/address', userController.addAddress)
 route.patch('/address/edit/:id', userController.editAddress)
+route.patch('/address/primary/:id', userController.editAddressPrimary)
 route.delete('/address/delete/:id', userController.delete)
 
 module.exports = route
