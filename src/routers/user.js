@@ -12,4 +12,6 @@ route.patch('/address/edit/:id', userController.editAddress)
 route.patch('/address/primary/:id', userController.editAddressPrimary)
 route.delete('/address/delete/:id', userController.delete)
 
+route.post('/change-password', userController.changePassword)
+
 module.exports = route

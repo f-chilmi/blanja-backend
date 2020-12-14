@@ -25,7 +25,7 @@ module.exports = {
         response(res, 'Email has been registered', {}, 400, false)
 
       } else {
-        const users = { email, password }
+        const users = { name, email, password }
 
         const createUser = await User.create(users)
         if (createUser) {

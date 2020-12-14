@@ -1,8 +1,6 @@
 const { User, User_balance, Product, Product_rating, Cart, User_address } = require('../models')
 const response = require('../helpers/response')
-const {pagination} = require('../helpers/pagination')
-const { Op } = require("sequelize")
-const {APP_URL} = process.env
+const bcrypt = require('bcrypt')
 const {updateUser, addAddress, editAddress} = require('../helpers/validation')
 
 module.exports = {
@@ -161,6 +159,34 @@ module.exports = {
         where: { id: id }
       })
       return response(res, 'Address deleted', {deleteAddress}, 200, true)
+    } catch (e) {
+      if (e.errors) {
+        return response(res, e.errors[0].message, {}, 500, false)
+      }
+      return response(res, e.message, {}, 500, false)
+    }
+  },
+  changePassword: async (req, res) => {
+    try {
+      const { id } = req.user
+      const { oldPassword, newPassword, confirmNewPassword } = req.body
+      
+      if (newPassword === confirmNewPassword) {
+        const dbHasId = await User.findOne({ where: { id } })
+        
+        const comparePassword = await bcrypt.compare(oldPassword, dbHasId.password)
+        
+        if (comparePassword) {
+          const newpassword = await bcrypt.hash(newPassword, await bcrypt.genSalt())
+          
+          const updated = await User.update({password: newpassword}, { where: {id} })
+          response(res, 'Password changed', { ...dbHasId.dataValues, newpassword, updated }, 200, true)
+        } else {
+          response(res, 'Type your old password correctly', {}, 400, false)
+        }
+      } else {
+        response(res, 'password must be the same', {}, 400, false)
+      }
     } catch (e) {
       if (e.errors) {
         return response(res, e.errors[0].message, {}, 500, false)
