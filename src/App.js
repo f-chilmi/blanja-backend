@@ -30,8 +30,8 @@ app.use('/checkout', authUser, checkoutRoutes)
 // app.use('/job-seeker', authSeeker, jobSeekerRoutes)
 // app.use('/company', authCompany, companyRoutes)
 
-app.get('*', (req, res) => {
-  response(res, 'Error route not found', {}, 404, false)
+app.get('/', (req, res) => {
+  response(res, 'Error route not found', {}, 200, true)
 })
 
 app.listen(APP_PORT, () => {
