@@ -34,6 +34,10 @@ app.get('/', (req, res) => {
   response(res, 'Error route not found', {}, 200, true)
 })
 
+app.get('/testing', (req, res) => {
+  response(res, 'App is running!!!', {}, 200, true)
+})
+
 app.listen(APP_PORT, () => {
   console.log(`App is running on port ${APP_PORT}`)
 })
