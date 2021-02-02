@@ -39,6 +39,6 @@ app.get('/testing', (req, res) => {
   response(res, 'App is running!!!', {}, 200, true)
 })
 
-app.listen(APP_PORT, () => {
+app.listen(PORT, () => {
   console.log(`App is running on port ${APP_PORT}`)
 })

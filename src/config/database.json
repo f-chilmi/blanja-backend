@@ -18,6 +18,7 @@
     "password": "ccjmPkbKhk",
     "database": "sql10390232",
     "host": "sql10.freesqldatabase.com",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "use_env_variable": "DATABASE_URL"
   }
 }

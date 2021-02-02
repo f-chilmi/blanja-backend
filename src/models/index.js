@@ -34,10 +34,10 @@ Object.keys(db).forEach(modelName => {
 });
 
 var connection = mysql.createPool({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB
+  host: "sql10.freesqldatabase.com",
+  user: "sql10390232",
+  password: "ccjmPkbKhk",
+  database: "sql10390232",
 });
 
 db.sequelize = sequelize;
