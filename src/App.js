@@ -28,8 +28,6 @@ app.use('/public', productRoutes)
 app.use('/cart', authUser, cartRoutes)
 app.use('/user', authUser, userRoutes)
 app.use('/checkout', authUser, checkoutRoutes)
-// app.use('/job-seeker', authSeeker, jobSeekerRoutes)
-// app.use('/company', authCompany, companyRoutes)
 
 app.get('/', (req, res) => {
   response(res, 'Error route not found', {}, 200, true)
@@ -40,5 +38,5 @@ app.get('/testing', (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`App is running on port ${APP_PORT}`)
+  console.log(`App is running on port ${PORT}`)
 })
