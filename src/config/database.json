@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "blanja_development",
-    "host": "127.0.0.1",
+    "username": "sql10390232",
+    "password": "ccjmPkbKhk",
+    "database": "sql10390232",
+    "host": "sql10.freesqldatabase.com",
     "dialect": "mysql"
   },
   "test": {
