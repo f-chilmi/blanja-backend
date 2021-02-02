@@ -1,5 +1,6 @@
 'use strict';
 
+const mysql = require("mysql2");
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -7,6 +8,7 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/database.json')[env];
 const db = {};
+const dbConfig = require('../config/database.json')
 
 let sequelize;
 if (config.use_env_variable) {
@@ -31,7 +33,14 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+var connection = mysql.createPool({
+  host: dbConfig.HOST,
+  user: dbConfig.USER,
+  password: dbConfig.PASSWORD,
+  database: dbConfig.DB
+});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+module.exports = db, connection;

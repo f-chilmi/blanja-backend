@@ -5,6 +5,7 @@ const cors = require('cors')
 const response = require('./helpers/response')
 
 const app = express()
+const PORT = process.env.APP_PORT || 3000
 const { APP_PORT } = process.env
 
 app.use(bodyParser.urlencoded({ extended: false }))
