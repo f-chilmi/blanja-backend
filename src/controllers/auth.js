@@ -55,11 +55,11 @@ module.exports = {
   },
   login: async (req, res) => {
     try {
-      const { value, error } = loginUser.validate(req.body)
-      if (error) {
-        return response(res, error.message, {}, 400, false)
-      }
-      const { email, password } = value
+//       const { value, error } = loginUser.validate(req.body)
+//       if (error) {
+//         return response(res, error.message, {}, 400, false)
+//       }
+      const { email, password } = req.body
 
       const find = await User.findOne({ where: { email } })
       if (find) {
